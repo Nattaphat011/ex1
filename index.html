@@ -5,8 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- ✅ รองรับมือถือ -->
   <title>✨ กิจกรรมสะท้อนตนเอง ✨</title>
   <style>
+    /* ฟอนต์หรูดูดี */
+    @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;500;700&display=swap');
+
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: "Kanit", sans-serif;
       margin: 0;
       padding: 20px;
       background: linear-gradient(135deg, #f9e0ff, #c3f0ff);
@@ -25,7 +28,7 @@
     .floating-img {
       display: block;
       margin: 0 auto 25px auto;
-      width: 120px;
+      width: 150px;
       animation: float 3s ease-in-out infinite;
       max-width: 40%;
     }
@@ -142,8 +145,30 @@
         width: 50px; height: 50px; font-size: 18px;
         top: 15px; right: 15px;
       }
-      img { max-width: 30%; }
+  img.goal-img {
+    max-width: 350px; /* ลดขนาดภาพบนจอเล็ก */
+  }
+
+  .img-modal-content {
+    max-width: 95%;
+    max-height: 80%;
+  }
     }
+
+  @media (max-width: 480px) {
+      body { padding: 15px; }
+      h1   { font-size: 1.6rem; }
+      h2   { font-size: 1.2rem; }
+      .animals { grid-template-columns: 1fr; } /* การ์ดเรียง 1 คอลัมน์ */
+      #musicBtn {
+        width: 50px; height: 50px; font-size: 18px;
+        top: 15px; right: 15px;
+      }
+  img.goal-img {
+    max-width: 320px;
+  }
+    }
+
   </style>
 
   <!-- 🎉 ไลบรารีลิบบิ้น confetti -->
@@ -151,7 +176,20 @@
 </head>
 <body>
 
-  <img src="images/หัวข้อ1.jpg" alt="" style="display:block; margin:0 auto 20px auto; max-width:50%; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+  <div class="container">
+  <img src="images/หัวข้อ1.jpg" 
+     alt="รูปภาพ" 
+     class="goal-img"
+     id="myImage">
+<!-- หมายเหตุสามารถแตะรูปภาพเพื่อขยายภาพได้ -->
+ <em> (สามารถแตะรูปภาพเพื่อขยายภาพได้) </em>
+
+
+     <div id="imgModal" class="img-modal">
+  <span class="img-close">&times;</span>
+  <img class="img-modal-content" id="imgModalContent">
+  <div id="imgCaption"></div>
+</div>
 
   <!-- 🎵 เพลงพื้นหลัง -->
   <audio id="bgMusic" loop>
