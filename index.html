@@ -4,6 +4,73 @@
   <meta charset="UTF-8">
   <title>กิจกรรมสะท้อนตนเอง 🪞</title>
   <style>
+    <!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>กิจกรรมสะท้อนตนเอง</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ปุ่มกลมลอย */
+    #musicBtn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: none;
+      background: #ff8c42;
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: transform 0.2s ease;
+    }
+    #musicBtn:hover {
+      transform: scale(1.1);
+      background: #ff6f00;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ เพลง -->
+  <audio id="bgMusic" loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-sunny.mp3" type="audio/mp3">
+  </audio>
+
+  <!-- ✅ ปุ่มลอย -->
+  <button id="musicBtn" onclick="toggleMusic()">▶️</button>
+
+  <!-- ✅ เนื้อหาหลัก -->
+  <div class="container" style="padding: 40px;">
+    <h1>กิจกรรมสะท้อนตนเอง</h1>
+    <p>เนื้อหากิจกรรมที่คุณต้องการ...</p>
+  </div>
+
+  <!-- ✅ Script -->
+  <script>
+    const music = document.getElementById("bgMusic");
+    const btn = document.getElementById("musicBtn");
+
+    function toggleMusic() {
+      if (music.paused) {
+        music.play();
+        btn.textContent = "⏸️"; // เปลี่ยนเป็น pause
+      } else {
+        music.pause();
+        btn.textContent = "▶️"; // เปลี่ยนเป็น play
+      }
+    }
+  </script>
+</body>
+</html>
     body {
       font-family: "Prompt", sans-serif;
       background: linear-gradient(to right, #c9e4f6, #fce1ec);
@@ -206,4 +273,5 @@
 
 </body>
 </html>
+
 
