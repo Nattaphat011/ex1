@@ -13,7 +13,8 @@
     --glass: rgba(255,255,255,0.04);
     --glass-2: rgba(255,255,255,0.02);
   }
-  html,body{height:100%;margin:0;font-family: "Noto Sans Thai", "Inter", system-ui, sans-serif;background:var(--bg1);color:#E6EEF8}
+  html,body{height:100%;margin:0;font-family: "Noto Sans Thai", "Inter", system-ui, sans-serif;color: #054A40; /* เข้มกว่าเขียวฟ้า อ่านง่าย */
+  background: var(--bg1);}
   .wrap{max-width:1100px;margin:36px auto;padding:28px;position:relative}
   header{display:flex;gap:16px;align-items:center;margin-bottom:18px}
   .logo{
@@ -22,7 +23,7 @@
   }
   .logo h1{margin:0;font-size:18px;color:white;letter-spacing:0.6px}
   h2{margin:0 0 6px 0;font-size:20px}
-  p.lead{margin:0;color:rgba(230,238,248,0.85)}
+  p.lead{margin:0;color: rgba(5, 74, 64, 0.85);}
 
   /* grid */
   .grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
@@ -38,17 +39,18 @@
   .animal.active{border-color:rgba(255,255,255,0.12);box-shadow:0 22px 40px rgba(0,0,0,0.7);transform:translateY(-10px) scale(1.02)}
   .animal svg{width:56px;height:56px;flex-shrink:0}
   .animal h3{margin:0;font-size:16px}
-  .badge{font-size:12px;color:rgba(230,238,248,0.75)}
+  .badge{font-size:12px;color: rgba(5, 74, 64, 0.7);}
 
   /* questions */
   .q{margin-top:14px}
   .q label{display:block;margin-bottom:8px;font-weight:600}
   .traits{display:flex;gap:8px;flex-wrap:wrap}
   .trait{background:var(--glass);padding:10px;border-radius:10px;cursor:pointer;border:1px solid transparent}
-  .trait.checked{background:linear-gradient(90deg,#4ADE80,#06B6D4);color:#05201A;border-color:rgba(0,0,0,0.06);transform:translateY(-6px)}
+  .trait.checked{background: linear-gradient(90deg,#34d399,#06b6d4); /* สีเขียวสดใส → ฟ้า */
+  color: #05201A;border-color:rgba(0,0,0,0.06);transform:translateY(-6px)}
   .btn{
-    display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,#ff8a00,#ff3d81);
-    color:white;font-weight:700;border:none;cursor:pointer;box-shadow:0 8px 30px rgba(255,61,129,0.12);
+    display:inline-block;padding:10px 14px;border-radius:10px;background: linear-gradient(90deg,#32d5a8,#06b6d4);
+    color: white;font-weight:700;border:none;cursor:pointer;box-shadow:0 8px 30px rgba(255,61,129,0.12);
   }
 
   /* right column */
@@ -76,9 +78,9 @@
   img{max-width:100%;border-radius:12px;margin-bottom:18px}
 
   /* responsive smaller text */
-  .small{font-size:13px;color:rgba(230,238,248,0.7)}
-  .success{color:#8ef5b6;font-weight:700}
-  .muted{color:rgba(230,238,248,0.55);font-size:13px}
+  .small{font-size:13px;color: rgba(5, 74, 64, 0.55);}
+  .success{color: #32d5a8;font-weight:700}
+  .muted{color: rgba(5, 74, 64, 0.55);font-size:13px}
 
   /* ===== Responsive tweaks ===== */
 @media (max-width: 768px) {
