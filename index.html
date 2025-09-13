@@ -7,7 +7,7 @@
 <style>
   /* --- Overall look: flashy gradient, big rounded cards, animations --- */
   :root{
-    --bg1: linear-gradient(135deg,#0f172a 0%,#0b1220 40%,#0b1b2e 100%);
+    --bg1: linear-gradient(135deg,#a8edea 0%, #d3f8e2 100%);
     --accent1: linear-gradient(90deg,#ff7a18,#af002d 60%);
     --card-bg: rgba(255,255,255,0.06);
     --glass: rgba(255,255,255,0.04);
@@ -74,12 +74,85 @@
   @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 
   img{max-width:100%;border-radius:12px;margin-bottom:18px}
-  @media(max-width:600px){img{margin-top:0}}
 
   /* responsive smaller text */
   .small{font-size:13px;color:rgba(230,238,248,0.7)}
   .success{color:#8ef5b6;font-weight:700}
   .muted{color:rgba(230,238,248,0.55);font-size:13px}
+
+  /* ===== Responsive tweaks ===== */
+@media (max-width: 768px) {
+  html, body {
+    font-size: 15px;           /* ลดขนาดฐานของตัวอักษร */
+  }
+
+  .wrap {
+    padding: 20px;
+    margin: 20px auto;
+  }
+
+  header {
+    flex-direction: column;    /* โลโก้ซ้อนบนหัวเรื่อง */
+    text-align: center;
+  }
+
+  .logo {
+    width: 70px;
+    height: 70px;
+    transform: none;           /* ยกเลิกการเอียงเพื่อให้พอดี */
+    margin-bottom: 10px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr; /* ซ้อนคอลัมน์เดียว */
+    gap: 14px;
+  }
+
+  .animal {
+    flex: 1 1 100%;            /* ให้การ์ดสัตว์กว้างเต็มบรรทัด */
+    min-width: auto;
+  }
+
+  .animal svg {
+    width: 48px;
+    height: 48px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  textarea,
+  input[type="text"] {
+    font-size: 15px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  html, body {
+    font-size: 14px;           /* ขนาดเล็กพิเศษสำหรับจอเล็ก */
+  }
+
+  .wrap {
+    padding: 16px;
+    margin: 10px auto;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  .btn {
+    width: 100%;               /* ปุ่มเต็มความกว้างเพื่อกดง่าย */
+    padding: 12px;
+  }
+
+  footer {
+    font-size: 12px;
+  }
+}
+
 </style>
 </head>
 <body>
