@@ -1,620 +1,162 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>สะท้อนตัวเอง — สัตว์ 4 ทิศ</title>
-<style>
-  /* --- Overall look: flashy gradient, big rounded cards, animations --- */
-  :root{
-    --bg1: linear-gradient(135deg,#a8edea 0%, #d3f8e2 100%);
-    --accent1: linear-gradient(90deg,#ff7a18,#af002d 60%);
-    --card-bg: rgba(255,255,255,0.06);
-    --glass: rgba(255,255,255,0.04);
-    --glass-2: rgba(255,255,255,0.02);
-  }
-  html,body{height:100%;margin:0;font-family: "Noto Sans Thai", "Inter", system-ui, sans-serif;color: #054A40; /* เข้มกว่าเขียวฟ้า อ่านง่าย */
-  background: var(--bg1);}
-  .wrap{max-width:1100px;margin:36px auto;padding:28px;position:relative}
-  header{display:flex;gap:16px;align-items:center;margin-bottom:18px}
-  .logo{
-    width:82px;height:82px;border-radius:18px;background:linear-gradient(135deg,#ff9a00,#ff3d81);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(0,0,0,0.6);
-    transform:rotate(-8deg);
-  }
-  .logo h1{margin:0;font-size:18px;color:rgb(0, 0, 0);letter-spacing:0.6px}
-  h2{margin:0 0 6px 0;font-size:20px}
-  p.lead{margin:0;color: rgba(5, 74, 64, 0.85);}
-
-  /* grid */
-  .grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
-  @media(max-width:980px){.grid{grid-template-columns:1fr}}
-  .card{background:var(--card-bg);border-radius:16px;padding:18px;box-shadow:0 6px 18px rgba(2,6,23,0.6);backdrop-filter: blur(6px);}
-  .animal-list{display:flex;flex-wrap:wrap;gap:12px}
-  .animal{
-    flex:1 1 48%;min-width:180px;border-radius:12px;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    cursor:pointer;border:1px solid transparent;transition:transform .22s ease, box-shadow .22s ease, border-color .22s;
-    display:flex;gap:12px;align-items:center;
-  }
-  .animal:hover{transform:translateY(-6px);box-shadow:0 14px 30px rgba(0,0,0,0.6)}
-  .animal.active{border-color:rgba(255,255,255,0.12);box-shadow:0 22px 40px rgba(0,0,0,0.7);transform:translateY(-10px) scale(1.02)}
-  .animal svg{width:56px;height:56px;flex-shrink:0}
-  .animal h3{margin:0;font-size:16px}
-  .badge{font-size:12px;color: rgba(5, 74, 64, 0.7);}
-
-  /* questions */
-  .q{margin-top:14px}
-  .q label{display:block;margin-bottom:8px;font-weight:600}
-  .traits{display:flex;gap:8px;flex-wrap:wrap}
-  .trait{background:var(--glass);padding:10px;border-radius:10px;cursor:pointer;border:1px solid transparent}
-  .trait.checked{background: linear-gradient(90deg,#34d399,#06b6d4); /* สีเขียวสดใส → ฟ้า */
-  color: #05201A;border-color:rgba(0,0,0,0.06);transform:translateY(-6px)}
-  .btn{
-    display:inline-block;padding:10px 14px;border-radius:10px;background: linear-gradient(90deg,#32d5a8,#06b6d4);
-    color: white;font-weight:700;border:none;cursor:pointer;box-shadow:0 8px 30px rgba(255,61,129,0.12);
-  }
-
-  /* right column */
-  .summary{position:sticky;top:28px}
-  .meter{height:12px;background:var(--glass-2);border-radius:999px;overflow:hidden;margin-top:8px}
-  .meter > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#34d399,#06b6d4);transition:width 600ms ease}
-
-  .field{margin-top:12px}
-  textarea,input[type="text"]{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-
-  /* small footer */
-  footer{margin-top:18px;color:rgba(230,238,248,0.6);font-size:13px;text-align:center}
-
-  /* confetti canvas */
-  #confetti{position:fixed;left:0;top:0;pointer-events:none;width:100%;height:100%;z-index:50}
-
-  /* flourish animations */
-  .sparkle{
-    position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.06), transparent 30%);
-    transform:rotate(0deg);
-    animation:spin 12s linear infinite;
-  }
-  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-
-  img{max-width:100%;border-radius:12px;margin-bottom:18px}
-
-  /* responsive smaller text */
-  .small{font-size:13px;color: rgba(5, 74, 64, 0.55);}
-  .success{color: #32d5a8;font-weight:700}
-  .muted{color: rgba(5, 74, 64, 0.55);font-size:13px}
-
-  /* ===== Responsive tweaks ===== */
-@media (max-width: 768px) {
-  html, body {
-    font-size: 15px;           /* ลดขนาดฐานของตัวอักษร */
-  }
-
-  .wrap {
-    padding: 20px;
-    margin: 20px auto;
-  }
-
-  header {
-    flex-direction: column;    /* โลโก้ซ้อนบนหัวเรื่อง */
-    text-align: center;
-  }
-
-  .logo {
-    width: 70px;
-    height: 70px;
-    transform: none;           /* ยกเลิกการเอียงเพื่อให้พอดี */
-    margin-bottom: 10px;
-  }
-
-  .grid {
-    grid-template-columns: 1fr; /* ซ้อนคอลัมน์เดียว */
-    gap: 14px;
-  }
-
-  .animal {
-    flex: 1 1 100%;            /* ให้การ์ดสัตว์กว้างเต็มบรรทัด */
-    min-width: auto;
-  }
-
-  .animal svg {
-    width: 48px;
-    height: 48px;
-  }
-
-  .card {
-    padding: 14px;
-  }
-
-  textarea,
-  input[type="text"] {
-    font-size: 15px;
-    padding: 8px;
-  }
-}
-
-@media (max-width: 480px) {
-  html, body {
-    font-size: 14px;           /* ขนาดเล็กพิเศษสำหรับจอเล็ก */
-  }
-
-  .wrap {
-    padding: 16px;
-    margin: 10px auto;
-  }
-
-  h2 {
-    font-size: 18px;
-  }
-
-  .btn {
-    width: 100%;               /* ปุ่มเต็มความกว้างเพื่อกดง่าย */
-    padding: 12px;
-  }
-
-  footer {
-    font-size: 12px;
-  }
-}
-
-</style>
+  <meta charset="UTF-8">
+  <title>กิจกรรมสะท้อนตนเอง 🪞</title>
+  <style>
+    body {
+      font-family: "Prompt", sans-serif;
+      background: linear-gradient(to right, #c9e4f6, #fce1ec);
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      color: #333;
+    }
+    header {
+      background: #ff9aa2;
+      color: white;
+      padding: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .container {
+      margin: 20px auto;
+      max-width: 700px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    h2 {
+      color: #ff6f61;
+    }
+    .question {
+      margin: 20px 0;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    textarea, input {
+      width: 80%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #6fcf97;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #57b77c;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e8f5e9;
+      border-radius: 8px;
+    }
+    .animals {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+    .animal {
+      flex: 1 1 45%;
+      margin: 10px;
+      padding: 15px;
+      background: #fef6e4;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .animal:hover {
+      transform: scale(1.05);
+      background: #ffe6cc;
+    }
+  </style>
 </head>
 <body>
-    <img src="images/หัวข้อ1.jpg" alt="">
-<canvas id="confetti"></canvas>
-<div class="wrap">
-  <header>
-    <div class="logo"><h1>สะท้อนตัวเอง</h1></div>
-    <div>
-      <h2>แบบสำรวจ — สัตว์ 4 ทิศ</h2>
-      <p class="lead">วันนี้เธออยากบอกอะไรกับตัวเอง? เลือกสัตว์ที่ตรงกับตัวคุณที่สุด แล้วตอบคำถามสั้น ๆ — บันทึกผลลง Google Sheets ได้</p>
-    </div>
-  </header>
 
-  <div class="grid">
-    <div>
-      <div class="card">
-        <h3>1] เลือกสัตว์ที่ตรงกับคุณมากที่สุด</h3>
-        <div class="animal-list" id="animalList">
-          <!-- Elephant -->
-          <div class="animal" data-key="elephant" data-dir="เหนือ">
-            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 38c-2-8 0-16 6-20 6-4 20-6 28 0 4 3 6 9 4 14" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="34" width="10" height="18" rx="3" stroke="#fff" stroke-width="2"/><rect x="18" y="44" width="10" height="8" rx="2" stroke="#fff" stroke-width="2"/></svg>
-            <div>
-              <h3>🐘 ช้าง — ทิศเหนือ</h3>
-              <div class="badge small">ความอดทนและมั่นคง — เหมาะกับงานที่ต้องรับผิดชอบ</div>
-            </div>
-          </div>
+<header>✨ กิจกรรมสะท้อนตนเอง ✨</header>
 
-          <!-- Lion -->
-          <div class="animal" data-key="lion" data-dir="ตะวันตก">
-            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="22" r="8" stroke="#fff" stroke-width="2"/><path d="M18 46c4-6 12-8 14-8s10 2 14 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-            <div>
-              <h3>🦁 สิงโต — ทิศตะวันตก</h3>
-              <div class="badge small">ความกล้าและการเป็นผู้นำ — เหมาะกับนักศึกษาที่ชอบเป็นหัวหน้า</div>
-            </div>
-          </div>
+<audio autoplay loop>
+  <source src="https://www.bensound.com/bensound-music/bensound-sunny.mp3" type="audio/mp3">
+</audio>
 
-          <!-- Dove -->
-          <div class="animal" data-key="dove" data-dir="ตะวันออก">
-            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 36c8-6 18-10 28-8 6 1 14 6 18 12-6 0-9 6-22 6-12 0-21-8-24-10z" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-            <div>
-              <h3>🐦 นกพิราบ — ทิศตะวันออก</h3>
-              <div class="badge small">อ่อนโยน การสื่อสารดี — เหมาะกับงานดูแลผู้ป่วย</div>
-            </div>
-          </div>
+<div class="container" id="activity">
 
-          <!-- Turtle -->
-          <div class="animal" data-key="turtle" data-dir="ใต้">
-            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="34" cy="34" rx="18" ry="12" stroke="#fff" stroke-width="2"/><path d="M22 40c-6 0-10 4-10 6v2h24" stroke="#fff" stroke-width="2"/></svg>
-            <div>
-              <h3>🐢 เต่า — ทิศใต้</h3>
-              <div class="badge small">ความละเอียดรอบคอบ — เหมาะกับงานหัตถการ</div>
-            </div>
-          </div>
-        </div>
+  <h2>1. สะท้อนตัวเอง 🪞</h2>
+  <div class="question">วันนี้เธออยากบอกอะไรกับตัวเอง?</div>
+  <textarea id="selfMessage" rows="3"></textarea>
+  <button onclick="saveMessage()">บันทึกข้อความ</button>
+  <div class="result" id="messageResult"></div>
 
-        <div class="q">
-          <label>ติ๊กคุณสมบัติที่คุณคิดว่า "ตรงกับคุณ" (แต่ละสัตว์มีจุดเด่น) — ผลจากที่ติ๊กจะคำนวณ %</label>
-          <div class="traits" id="traitsArea">
-            <!-- traits จะใส่โดย JS ตามสัตว์ที่เลือก -->
-          </div>
-        </div>
-
-        <div class="q">
-          <label>เธอคิดว่าสัตว์ตัวไหนตรงกับคุณมากที่สุด?</label>
-          <div class="small muted" id="selectedAnimalText">ยังไม่เลือกสัตว์</div>
-        </div>
-
-        <div class="q">
-          <label>เปอร์เซ็นต์ความตรงกับตัวตน</label>
-          <div class="meter"><i id="pctBar"></i></div>
-          <div class="small" id="pctText">0%</div>
-        </div>
-
-      </div>
-
-      <div class="card" style="margin-top:14px">
-        <h3>2] สะพานเชื่อม อดีต - ปัจจุบัน - อนาคต</h3>
-
-        <div class="field q">
-          <label>สิ่งที่เธอเคยทำแล้วภูมิใจ</label>
-          <textarea id="proud" rows="3" placeholder="เขียนสิ่งที่ภูมิใจ..."></textarea>
-        </div>
-
-        <div class="field q">
-          <label>สิ่งที่เธอกำลังทำเพื่อพัฒนาตนเอง</label>
-          <textarea id="improving" rows="3" placeholder="กำลังพัฒนาด้านไหน..."></textarea>
-        </div>
-
-        <div class="field q">
-          <label>สิ่งที่เธออยากทำให้สำเร็จ</label>
-          <input type="text" id="goal" placeholder="เป้าหมายที่อยากสำเร็จ">
-        </div>
-
-        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-          <button class="btn" id="saveBtn">บันทึกผลลง Google Sheets</button>
-          <button class="btn" id="saveLocal" style="background:linear-gradient(90deg,#667eea,#764ba2)">บันทึกเฉพาะเครื่องนี้</button>
-          <div class="small muted" id="statusMsg" style="margin-left:8px"></div>
-        </div>
-
-        <div style="margin-top:12px" class="small muted">
-          หมายเหตุ: หากต้องการเชื่อม Google Sheets — คุณต้อง deploy Google Apps Script (ตัวอย่างโค้ดให้ด้านล่าง) แล้วนำ URL มาใส่ในฟิลด์ "GAS_WEBHOOK" ในการตั้งค่า.
-        </div>
-      </div>
-    </div>
-
-    <aside class="summary card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <h3>สรุปด่วน</h3>
-          <div class="muted small">เลือกสัตว์: <span id="sumAnimal">-</span></div>
-          <div class="muted small">ทิศ: <span id="sumDir">-</span></div>
-        </div>
-        <div style="text-align:right">
-          <div class="small">บันทึกสำเร็จ: <span id="savedCount">0</span></div>
-        </div>
-      </div>
-
-      <div style="margin-top:12px">
-        <label class="small">วันนี้เธออยากบอกอะไรกับตัวเอง</label>
-        <textarea id="messageToSelf" rows="4" placeholder="เขียนข้อความถึงตัวเอง..."></textarea>
-      </div>
-
-      <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-        <button class="btn" id="calcPercent">คำนวณ % ใหม่</button>
-        <button class="btn" id="clearAll" style="background:linear-gradient(90deg,#ef4444,#f97316)">ล้างข้อมูลทั้งหมด</button>
-      </div>
-
-      <div style="margin-top:12px">
-        <div class="small muted">ตัวอย่างแถวที่จะบันทึก (Google Sheets):</div>
-        <pre class="small" style="background:rgba(0,0,0,0.18);padding:8px;border-radius:8px">วันที่,เวลา,สัตว์,ทิศ,เปอร์เซ็นต์,สิ่งที่ภูมิใจ,กำลังพัฒนา,เป้าหมาย,ข้อความถึงตัวเอง,metadata</pre>
-      </div>
-    </aside>
-
+  <h2>2. สัตว์ 4 ทิศ 🐘🦁🐦🐢</h2>
+  <div class="question">เธอคิดว่าสัตว์ตัวไหนตรงกับคุณมากที่สุด?</div>
+  <div class="animals">
+    <div class="animal" onclick="chooseAnimal('ช้าง 🐘')">🐘 ช้าง - อดทน มั่นคง</div>
+    <div class="animal" onclick="chooseAnimal('สิงโต 🦁')">🦁 สิงโต - กล้า มั่นใจ</div>
+    <div class="animal" onclick="chooseAnimal('นกพิราบ 🐦')">🐦 นกพิราบ - อ่อนโยน สื่อสาร</div>
+    <div class="animal" onclick="chooseAnimal('เต่า 🐢')">🐢 เต่า - รอบคอบ ละเอียด</div>
   </div>
+  <input type="number" id="percent" placeholder="ตรงกับคุณกี่ % (0-100)">
+  <button onclick="saveAnimal()">ยืนยัน</button>
+  <div class="result" id="animalResult"></div>
 
-  <footer>
-    <div class="small">สร้างโดย — เทมเพลตสำหรับบันทึกการสะท้อนตนเอง (รองรับการเชื่อม Google Sheets)</div>
-  </footer>
+  <h2>3. สะพานเชื่อมอดีต-ปัจจุบัน-อนาคต 🌉</h2>
+  <div class="question">สิ่งที่เธอเคยทำแล้วภูมิใจ</div>
+  <textarea id="past" rows="2"></textarea>
+
+  <div class="question">สิ่งที่เธอกำลังทำเพื่อพัฒนาตนเอง</div>
+  <textarea id="present" rows="2"></textarea>
+
+  <div class="question">สิ่งที่เธออยากทำให้สำเร็จ</div>
+  <textarea id="future" rows="2"></textarea>
+
+  <button onclick="saveBridge()">บันทึกความคิด</button>
+  <div class="result" id="bridgeResult"></div>
+
 </div>
 
 <script>
-/* ========= Configuration =============
-  - หากต้องการบันทึกไปยัง Google Sheets ให้เอา URL ของ Google Apps Script Web App
-    แล้ววางในตัวแปร GAS_WEBHOOK. หากยังไม่ต้องการ ให้เว้นเป็น "".
-  - อย่าลืมตั้ง TOKEN ใน Apps Script และใส่ไว้ด้านล่าง (เพื่อความปลอดภัยพื้นฐาน)
-*/
-const GAS_WEBHOOK = "https://script.google.com/macros/s/AKfycbziuB9WtBjNLGeY16YpRN0rzy3yVDDH_UiFGA6Mw_MDA2tU9K1biY1gvEGQi-9YnYaI/exec"; // <-- วาง URL ของ Google Apps Script ที่ deploy เป็น Web App ที่รับ POST
-const GAS_TOKEN = "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0"; // <-- ต้องตรงกับ token ที่ตั้งใน Apps Script
-
-/* ========= ข้อมูลสัตว์ + traits ========= */
-const ANIMALS = {
-  elephant: {
-    name: "ช้าง",
-    dir: "เหนือ",
-    emoji: "🐘",
-    traits: [
-      "อดทน",
-      "หนักแน่น",
-      "รับผิดชอบสูง",
-      "ไม่ทิ้งงาน"
-    ],
-    caution: "ทำงานช้า ไม่ชอบการเปลี่ยนแปลง"
-  },
-  lion: {
-    name: "สิงโต",
-    dir: "ตะวันตก",
-    emoji: "🦁",
-    traits: [
-      "กล้าตัดสินใจ",
-      "มั่นใจในการสื่อสาร",
-      "เป็นผู้นำ",
-      "ยอมรับความเสี่ยง"
-    ],
-    caution: "บางครั้งรีบเร่ง ใจร้อน อาจใช้อำนาจกับเพื่อน"
-  },
-  dove: {
-    name: "นกพิราบ",
-    dir: "ตะวันออก",
-    emoji: "🐦",
-    traits: [
-      "อ่อนโยน",
-      "เข้าถึงผู้ป่วยได้ง่าย",
-      "พูดปลอบโยนเก่ง",
-      "ใจดี"
-    ],
-    caution: "ขี้เกรงใจเกินไป ไม่กล้าปฏิเสธงาน"
-  },
-  turtle: {
-    name: "เต่า",
-    dir: "ใต้",
-    emoji: "🐢",
-    traits: [
-      "ทำงานอย่างมีระบบ",
-      "ระมัดระวัง",
-      "ไม่พลาดง่าย",
-      "แม่นยำในการหัตถการ"
-    ],
-    caution: "ทำงานช้า กดดันง่ายเมื่อต้องเร่งด่วน"
+  function saveMessage() {
+    let msg = document.getElementById('selfMessage').value;
+    document.getElementById('messageResult').innerHTML = "💌 ข้อความของคุณ: " + msg;
   }
-};
 
-/* ======= App state ====== */
-let state = {
-  selected: null,
-  checkedTraits: new Set(),
-  savedCount: 0
-};
-
-/* ====== DOM refs ====== */
-const animalListEl = document.getElementById('animalList');
-const traitsArea = document.getElementById('traitsArea');
-const selectedAnimalText = document.getElementById('selectedAnimalText');
-const pctBar = document.getElementById('pctBar');
-const pctText = document.getElementById('pctText');
-const sumAnimal = document.getElementById('sumAnimal');
-const sumDir = document.getElementById('sumDir');
-const statusMsg = document.getElementById('statusMsg');
-const savedCountEl = document.getElementById('savedCount');
-
-/* ====== Helpers ====== */
-function el(q){return document.querySelector(q)}
-function elAll(q){return document.querySelectorAll(q)}
-
-function selectAnimal(key, elNode){
-  // set state
-  state.selected = key;
-  state.checkedTraits = new Set();
-
-  // UI
-  elAll('.animal').forEach(n=>n.classList.remove('active'));
-  if(elNode) elNode.classList.add('active');
-
-  // render traits
-  renderTraits();
-
-  // update summary
-  sumAnimal.textContent = `${ANIMALS[key].emoji} ${ANIMALS[key].name}`;
-  sumDir.textContent = ANIMALS[key].dir;
-  selectedAnimalText.textContent = `${ANIMALS[key].emoji} ${ANIMALS[key].name} — ${ANIMALS[key].caution}`;
-  updatePct();
-}
-
-function renderTraits(){
-  traitsArea.innerHTML = '';
-  if(!state.selected) {
-    traitsArea.innerHTML = '<div class="muted small">โปรดเลือกสัตว์ก่อน</div>'; return;
+  let chosenAnimal = "";
+  function chooseAnimal(animal) {
+    chosenAnimal = animal;
+    alert("คุณเลือก: " + animal);
   }
-  const traits = ANIMALS[state.selected].traits;
-  traits.forEach((t, idx)=>{
-    const d = document.createElement('div');
-    d.className = 'trait';
-    d.textContent = t;
-    d.tabIndex = 0;
-    d.dataset.idx = idx;
-    d.addEventListener('click', ()=>{
-      toggleTrait(idx, d);
-    });
-    d.addEventListener('keypress', (e)=>{
-      if(e.key === 'Enter') toggleTrait(idx, d);
-    })
-    traitsArea.appendChild(d);
-  })
-}
 
-function toggleTrait(idx, node){
-  const key = `${state.selected}_${idx}`;
-  if(state.checkedTraits.has(key)){
-    state.checkedTraits.delete(key); node.classList.remove('checked');
-  } else {
-    state.checkedTraits.add(key); node.classList.add('checked');
-  }
-  updatePct();
-}
-
-function updatePct(){
-  if(!state.selected){ pctBar.style.width='0%'; pctText.textContent='0%'; return; }
-  const total = ANIMALS[state.selected].traits.length;
-  // compute by counting checked for this animal
-  let cnt = 0;
-  state.checkedTraits.forEach(k=>{
-    if(k.startsWith(state.selected+'_')) cnt++;
-  });
-  const pct = Math.round((cnt/total)*100);
-  pctBar.style.width = pct + '%';
-  pctText.textContent = pct + '%';
-}
-
-/* ===== Saving: LocalStorage + Google Sheets POST ===== */
-function getFormData(){
-  const now = new Date();
-  const animalKey = state.selected || '';
-  const animalName = animalKey ? (ANIMALS[animalKey].emoji + ' ' + ANIMALS[animalKey].name) : '';
-  const pct = pctText.textContent.replace('%','') || '0';
-  const proud = document.getElementById('proud').value || '';
-  const improving = document.getElementById('improving').value || '';
-  const goal = document.getElementById('goal').value || '';
-  const messageToSelf = document.getElementById('messageToSelf').value || '';
-  return {
-    timestamp: now.toISOString(),
-    date: now.toLocaleDateString('th-TH'),
-    time: now.toLocaleTimeString('th-TH'),
-    animal_key: animalKey,
-    animal_name: animalName,
-    direction: animalKey ? ANIMALS[animalKey].dir : '',
-    percent: pct,
-    proud,
-    improving,
-    goal,
-    messageToSelf,
-    meta: {
-      userAgent: navigator.userAgent,
-      url: location.href
+  function saveAnimal() {
+    let percent = document.getElementById('percent').value;
+    if (chosenAnimal === "") {
+      alert("กรุณาเลือกสัตว์ที่ตรงกับคุณก่อนค่ะ!");
+      return;
     }
-  };
-}
-
-function saveLocal(){
-  const data = getFormData();
-  let arr = JSON.parse(localStorage.getItem('self_reflections')||'[]');
-  arr.push(data);
-  localStorage.setItem('self_reflections', JSON.stringify(arr));
-  state.savedCount = arr.length;
-  savedCountEl.textContent = state.savedCount;
-  statusMsg.textContent = 'บันทึกในเครื่องเรียบร้อย ✔';
-  statusMsg.classList.add('success');
-  // clear message
-  setTimeout(()=>{ statusMsg.textContent = ''; statusMsg.classList.remove('success') }, 2200);
-}
-
-async function saveToGAS(){
-  if(!GAS_WEBHOOK){
-    statusMsg.textContent = 'ยังไม่ได้ตั้งค่า GAS_WEBHOOK (วาง URL ของ Apps Script ที่ deploy ไว้ในไฟล์นี้)';
-    return;
+    document.getElementById('animalResult').innerHTML = "🐾 คุณคือ " + chosenAnimal + " ตรงกับคุณ " + percent + "%";
   }
-  const payload = getFormData();
-  statusMsg.textContent = 'กำลังส่งข้อมูล...';
-  try{
-    const resp = await fetch(GAS_WEBHOOK, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-app-token': GAS_TOKEN
-      },
-      body: JSON.stringify(payload)
-    });
-    if(!resp.ok) throw new Error('HTTP ' + resp.status);
-    const j = await resp.json();
-    if(j.result === 'success'){
-      statusMsg.textContent = 'ส่งข้อมูลสำเร็จ ✔';
-      statusMsg.classList.add('success');
-      // increment savedCount (local)
-      state.savedCount++;
-      savedCountEl.textContent = state.savedCount;
-      // also save local copy
-      let arr = JSON.parse(localStorage.getItem('self_reflections')||'[]');
-      arr.push({...payload, saved_remote: true});
-      localStorage.setItem('self_reflections', JSON.stringify(arr));
-    } else {
-      statusMsg.textContent = 'ผิดพลาด: ' + (j.message || 'Unknown');
-    }
-  }catch(err){
-    statusMsg.textContent = 'เซิร์ฟเวอร์ไม่ตอบ: ' + err.message;
-  } finally {
-    setTimeout(()=>{ statusMsg.textContent = ''; statusMsg.classList.remove('success') }, 2800);
+
+  function saveBridge() {
+    let past = document.getElementById('past').value;
+    let present = document.getElementById('present').value;
+    let future = document.getElementById('future').value;
+    document.getElementById('bridgeResult').innerHTML =
+      "<strong>อดีต:</strong> " + past + "<br>" +
+      "<strong>ปัจจุบัน:</strong> " + present + "<br>" +
+      "<strong>อนาคต:</strong> " + future;
   }
-}
-
-/* ====== init ====== */
-function init(){
-  // attach click to animals
-  elAll('.animal').forEach(node=>{
-    node.addEventListener('click', ()=> {
-      selectAnimal(node.dataset.key, node);
-    });
-    // set dataset.key properly
-    const key = node.getAttribute('data-key');
-    node.dataset.key = key;
-  });
-
-  // pre-select first if none
-  // none selected by default
-
-  // buttons
-  document.getElementById('saveLocal').addEventListener('click', saveLocal);
-  document.getElementById('saveBtn').addEventListener('click', saveToGAS);
-  document.getElementById('calcPercent').addEventListener('click', updatePct);
-  document.getElementById('clearAll').addEventListener('click', ()=>{
-    if(confirm('ล้างข้อมูลในฟอร์มทั้งหมด?')) {
-      // clear form and local state
-      state.selected = null; state.checkedTraits = new Set();
-      elAll('.animal').forEach(n=>n.classList.remove('active'));
-      renderTraits(); pctBar.style.width='0%'; pctText.textContent='0%';
-      sumAnimal.textContent='-'; sumDir.textContent='-'; selectedAnimalText.textContent='ยังไม่เลือกสัตว์';
-      document.getElementById('proud').value=''; document.getElementById('improving').value=''; document.getElementById('goal').value='';
-      document.getElementById('messageToSelf').value='';
-    }
-  });
-
-  // try restore savedCount from local
-  let arr = JSON.parse(localStorage.getItem('self_reflections')||'[]');
-  state.savedCount = arr.length;
-  savedCountEl.textContent = state.savedCount;
-}
-
-init();
-
-/* ===== confetti simple ====== */
-const confettiCanvas = document.getElementById('confetti');
-const ctx = confettiCanvas.getContext('2d');
-let W = confettiCanvas.width = innerWidth;
-let H = confettiCanvas.height = innerHeight;
-window.addEventListener('resize', ()=>{W = confettiCanvas.width = innerWidth; H = confettiCanvas.height = innerHeight;});
-
-const pieces = [];
-const colors = ['#FF7A18','#FF3D81','#34D399','#60A5FA','#FBBF24','#A78BFA'];
-function spawnConfetti(){
-  for(let i=0;i<60;i++){
-    pieces.push({
-      x: Math.random()*W,
-      y: -20 - Math.random()*H,
-      r: 6 + Math.random()*10,
-      c: colors[Math.floor(Math.random()*colors.length)],
-      s: 1 + Math.random()*3,
-      rot: Math.random()*360
-    })
-  }
-}
-function updateConfetti(){
-  ctx.clearRect(0,0,W,H);
-  for(let i=pieces.length-1;i>=0;i--){
-    const p = pieces[i];
-    p.y += p.s;
-    p.x += Math.sin(p.y/30)*2;
-    p.rot += p.s;
-    ctx.save();
-    ctx.translate(p.x,p.y);
-    ctx.rotate(p.rot*Math.PI/180);
-    ctx.fillStyle = p.c;
-    ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r*0.6);
-    ctx.restore();
-    if(p.y > H+40) pieces.splice(i,1);
-  }
-  requestAnimationFrame(updateConfetti);
-}
-spawnConfetti(); updateConfetti();
-
-/* trigger confetti for fun when user saves remotely */
-const oldSaveToGAS = saveToGAS;
-saveToGAS = async function(){
-  await oldSaveToGAS();
-  // if saved, spawn more confetti
-  spawnConfetti();
-}
-
-/* Access keys: set data-key attributes to animal nodes (for safety) */
-document.querySelectorAll('.animal').forEach(n=>{
-  // ensure dataset.key present (already set in HTML)
-});
-
 </script>
+
 </body>
 </html>
