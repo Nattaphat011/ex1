@@ -15,7 +15,6 @@
       margin: 0;
       padding: 0;
     }
-
     /* ปุ่มกลมลอย */
     #musicBtn {
       position: fixed;
@@ -39,115 +38,13 @@
   </style>
 </head>
 <body>
-
-  <!-- ✅ เพลง -->
-  <audio id="bgMusic" loop>
+   <audio id="bgMusic" loop>
     <source src="https://www.bensound.com/bensound-music/bensound-sunny.mp3" type="audio/mp3">
   </audio>
-
-  <!-- ✅ ปุ่มลอย -->
-  <button id="musicBtn" onclick="toggleMusic()">▶️</button>
-
-  <!-- ✅ เนื้อหาหลัก -->
-  <div class="container" style="padding: 40px;">
+  <button onclick="toggleMusic()" id="musicBtn">▶️ เล่นเพลง</button>
+  <!-- เนื้อหากิจกรรม -->
+  <div class="container">
     <h1>กิจกรรมสะท้อนตนเอง</h1>
-    <p>เนื้อหากิจกรรมที่คุณต้องการ...</p>
-  </div>
-
-  <!-- ✅ Script -->
-  <script>
-    const music = document.getElementById("bgMusic");
-    const btn = document.getElementById("musicBtn");
-
-    function toggleMusic() {
-      if (music.paused) {
-        music.play();
-        btn.textContent = "⏸️"; // เปลี่ยนเป็น pause
-      } else {
-        music.pause();
-        btn.textContent = "▶️"; // เปลี่ยนเป็น play
-      }
-    }
-  </script>
-</body>
-</html>
-    body {
-      font-family: "Prompt", sans-serif;
-      background: linear-gradient(to right, #c9e4f6, #fce1ec);
-      margin: 0;
-      padding: 0;
-      text-align: center;
-      color: #333;
-    }
-    header {
-      background: #ff9aa2;
-      color: white;
-      padding: 20px;
-      font-size: 24px;
-      font-weight: bold;
-    }
-    .container {
-      margin: 20px auto;
-      max-width: 700px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-      padding: 20px;
-    }
-    h2 {
-      color: #ff6f61;
-    }
-    .question {
-      margin: 20px 0;
-      font-size: 18px;
-      font-weight: bold;
-    }
-    textarea, input {
-      width: 80%;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-    button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      background: #6fcf97;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #57b77c;
-    }
-    .result {
-      margin-top: 20px;
-      padding: 15px;
-      background: #e8f5e9;
-      border-radius: 8px;
-    }
-    .animals {
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      margin-top: 15px;
-    }
-    .animal {
-      flex: 1 1 45%;
-      margin: 10px;
-      padding: 15px;
-      background: #fef6e4;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .animal:hover {
-      transform: scale(1.05);
-      background: #ffe6cc;
-    }
   </style>
 </head>
 <body>
@@ -273,5 +170,6 @@
 
 </body>
 </html>
+
 
 
