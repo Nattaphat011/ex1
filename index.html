@@ -300,102 +300,133 @@ em {
     });
   });
 
+  const scriptURL = "https://script.google.com/macros/s/AKfycbzNgBNH4WMrb5aG7mGOG3Vcf8WoVSVklUcLfltlMqAGC7f4zgKlVG4PJ5EP-2Rj2H-d/exec"; // ใส่ URL จาก Apps Script
+
   // 🎵 toggle เพลง
-  const music = document.getElementById("bgMusic");
-  const btn = document.getElementById("musicBtn");
-  function toggleMusic() {
-    if (music.paused) {
-      music.play();
-      btn.textContent = "⏸️";
-    } else {
-      music.pause();
-      btn.textContent = "▶️";
+const music = document.getElementById("bgMusic");
+const btn = document.getElementById("musicBtn");
+function toggleMusic() {
+  if (music.paused) {
+    music.play();
+    btn.textContent = "⏸️";
+  } else {
+    music.pause();
+    btn.textContent = "▶️";
+  }
+}
+
+// -------------------------
+// ฟังก์ชันส่งข้อมูลไป Google Sheets
+function sendToSheet(data) {
+  fetch(scriptURL, {
+    method: "POST",
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(res => {
+    if(res.result === "success"){
+      console.log("✅ บันทึกสำเร็จ", data);
     }
+  })
+  .catch(err => console.error("❌ Error:", err));
+}
+
+// -------------------------
+// 1) บันทึกข้อความสะท้อนตนเอง
+function saveMessage() {
+  let msg = document.getElementById('selfMessage').value;
+  document.getElementById('messageResult').innerHTML = "💌 ข้อความของคุณ: <br>" + msg;
+
+  sendToSheet({
+    selfMessage: msg,
+    animal: "",
+    percent: "",
+    past: "",
+    present: "",
+    future: ""
+  });
+}
+
+// -------------------------
+// ข้อมูลสัตว์
+const animalInfo = {
+  "ช้าง": { icon: "🐘", desc: "ความอดทนและมั่นคง", color: "#6d4c41",
+    detail: `<ul><li><b>จุดเด่น:</b> อดทน หนักแน่น มีความรับผิดชอบสูง</li>
+             <li><b>ควรระวัง:</b> ทำงานช้า ไม่ชอบการเปลี่ยนแปลง</li>
+             <li><b>เหมาะกับ:</b> งานที่ต้องใช้เวลา</li></ul>` },
+  "สิงโต": { icon: "🦁", desc: "ความกล้าและความเป็นผู้นำ", color: "#ef6c00",
+    detail: `<ul><li><b>จุดเด่น:</b> กล้าตัดสินใจ มั่นใจ</li>
+             <li><b>ควรระวัง:</b> ใจร้อน ใช้อำนาจเกินไป</li>
+             <li><b>เหมาะกับ:</b> ผู้นำกลุ่ม</li></ul>` },
+  "นกพิราบ": { icon: "🐦", desc: "ความอ่อนโยนและการสื่อสาร", color: "#42a5f5",
+    detail: `<ul><li><b>จุดเด่น:</b> ใจดี อ่อนโยน ปรับตัวง่าย</li>
+             <li><b>ควรระวัง:</b> ขี้เกรงใจ ไม่กล้าปฏิเสธ</li>
+             <li><b>เหมาะกับ:</b> นักสื่อสาร</li></ul>` },
+  "เต่า": { icon: "🐢", desc: "ความละเอียดรอบคอบ", color: "#388e3c",
+    detail: `<ul><li><b>จุดเด่น:</b> ทำงานเป็นระบบ ระมัดระวัง</li>
+             <li><b>ควรระวัง:</b> ทำงานช้า กดดันง่าย</li>
+             <li><b>เหมาะกับ:</b> งานที่ต้องใช้ความแม่นยำ</li></ul>` }
+};
+
+let chosenAnimal = "";
+
+// -------------------------
+// 2) เลือกสัตว์
+function chooseAnimal(animal) {
+  chosenAnimal = animal;
+  const a = animalInfo[animal];
+  document.getElementById('animalResult').innerHTML =
+    `<div style="border-left: 8px solid ${a.color}; padding:10px;">
+      คุณเลือก <b style="color:${a.color}">${a.icon} ${animal}</b><br>
+      <em>${a.desc}</em><br>${a.detail}
+    </div>`;
+}
+
+// บันทึกสัตว์ที่เลือก
+function saveAnimal() {
+  let percent = document.getElementById('percent').value;
+  if (chosenAnimal === "") {
+    alert("กรุณาเลือกสัตว์ที่ตรงกับคุณก่อนค่ะ!");
+    return;
   }
+  const a = animalInfo[chosenAnimal];
+  document.getElementById('animalResult').innerHTML =
+    `<div style="border-left: 8px solid ${a.color}; padding:10px;">
+      🐾 คุณคือ <b style="color:${a.color}">${a.icon} ${chosenAnimal}</b>
+      ตรงกับคุณ ${percent}% <br>
+      <em>${a.desc}</em> ${a.detail}
+    </div>`;
 
-  function saveMessage() {
-    let msg = document.getElementById('selfMessage').value;
-    document.getElementById('messageResult').innerHTML = "💌 ข้อความของคุณ: <br>" + msg;
-  }
+  sendToSheet({
+    selfMessage: "",
+    animal: chosenAnimal,
+    percent: percent,
+    past: "",
+    present: "",
+    future: ""
+  });
+}
 
-  // ข้อมูลสัตว์
-  const animalInfo = {
-    "ช้าง": { icon: "🐘", desc: "ความอดทนและมั่นคง", color: "#6d4c41",
-      detail: `<ul><li><b>จุดเด่น:</b> อดทน หนักแน่น มีความรับผิดชอบสูง</li>
-               <li><b>ควรระวัง:</b> ทำงานช้า ไม่ชอบการเปลี่ยนแปลง</li>
-               <li><b>เหมาะกับ:</b> งานที่ต้องใช้เวลา</li></ul>` },
-    "สิงโต": { icon: "🦁", desc: "ความกล้าและความเป็นผู้นำ", color: "#ef6c00",
-      detail: `<ul><li><b>จุดเด่น:</b> กล้าตัดสินใจ มั่นใจ</li>
-               <li><b>ควรระวัง:</b> ใจร้อน ใช้อำนาจเกินไป</li>
-               <li><b>เหมาะกับ:</b> ผู้นำกลุ่ม</li></ul>` },
-    "นกพิราบ": { icon: "🐦", desc: "ความอ่อนโยนและการสื่อสาร", color: "#42a5f5",
-      detail: `<ul><li><b>จุดเด่น:</b> ใจดี อ่อนโยน ปรับตัวง่าย</li>
-               <li><b>ควรระวัง:</b> ขี้เกรงใจ ไม่กล้าปฏิเสธ</li>
-               <li><b>เหมาะกับ:</b> นักสื่อสาร</li></ul>` },
-    "เต่า": { icon: "🐢", desc: "ความละเอียดรอบคอบ", color: "#388e3c",
-      detail: `<ul><li><b>จุดเด่น:</b> ทำงานเป็นระบบ ระมัดระวัง</li>
-               <li><b>ควรระวัง:</b> ทำงานช้า กดดันง่าย</li>
-               <li><b>เหมาะกับ:</b> งานที่ต้องใช้ความแม่นยำ</li></ul>` }
-  };
+// -------------------------
+// 3) บันทึกสะพานอดีต-ปัจจุบัน-อนาคต
+function saveBridge() {
+  let past = document.getElementById('past').value;
+  let present = document.getElementById('present').value;
+  let future = document.getElementById('future').value;
+  document.getElementById('bridgeResult').innerHTML =
+    `<b>อดีต:</b> ${past}<br>
+     <b>ปัจจุบัน:</b> ${present}<br>
+     <b>อนาคต:</b> ${future}`;
 
-  let chosenAnimal = "";
-  function chooseAnimal(animal) {
-    chosenAnimal = animal;
-    const a = animalInfo[animal];
-    document.getElementById('animalResult').innerHTML =
-      `<div style="border-left: 8px solid ${a.color}; padding:10px;">
-        คุณเลือก <b style="color:${a.color}">${a.icon} ${animal}</b><br>
-        <em>${a.desc}</em><br>${a.detail}
-      </div>`;
-  }
-
-  function saveAnimal() {
-    let percent = document.getElementById('percent').value;
-    if (chosenAnimal === "") {
-      alert("กรุณาเลือกสัตว์ที่ตรงกับคุณก่อนค่ะ!");
-      return;
-    }
-    const a = animalInfo[chosenAnimal];
-    document.getElementById('animalResult').innerHTML =
-      `<div style="border-left: 8px solid ${a.color}; padding:10px;">
-        🐾 คุณคือ <b style="color:${a.color}">${a.icon} ${chosenAnimal}</b>
-        ตรงกับคุณ ${percent}% <br>
-        <em>${a.desc}</em> ${a.detail}
-      </div>`;
-  }
-
-  function saveBridge() {
-    let past = document.getElementById('past').value;
-    let present = document.getElementById('present').value;
-    let future = document.getElementById('future').value;
-    document.getElementById('bridgeResult').innerHTML =
-      `<b>อดีต:</b> ${past}<br>
-       <b>ปัจจุบัน:</b> ${present}<br>
-       <b>อนาคต:</b> ${future}`;
-  }
-
-   const modal = document.getElementById('imgModal');
-  const img = document.getElementById('myImage');
-  const modalImg = document.getElementById('imgModalContent');
-  const caption = document.getElementById('imgCaption');
-  const closeBtn = document.getElementsByClassName('img-close')[0];
-
-  img.onclick = function() {
-    modal.style.display = "block";
-    modalImg.src = this.src;
-    caption.innerHTML = this.alt;
-  }
-
-  closeBtn.onclick = function() {
-    modal.style.display = "none";
-  }
-
-  // ปิด modal เมื่อคลิกที่พื้นหลัง
-  modal.onclick = function(e) {
-    if (e.target === modal) {
-      modal.style.display = "none";
-    }
-  }
+  sendToSheet({
+    selfMessage: "",
+    animal: "",
+    percent: "",
+    past: past,
+    present: present,
+    future: future
+  });
+}
 </script>
 </body>
 </html>
