@@ -262,7 +262,7 @@ em {
 
   <h2>1. สะท้อนความรู้สึกของตัวคุณเอง 🪞</h2>
   <textarea id="selfMessage" rows="3" placeholder="เขียนสิ่งที่อยากบอกกับตัวคุณเอง...ในวันนี้"></textarea>
-  <button onclick="saveMessage()">บันทึกข้อความ</button>
+  <!-- <button onclick="saveMessage()">บันทึกข้อความ</button> -->
   <div class="result" id="messageResult"></div>
 
   <h2>2. สัตว์ 4 ทิศ 🐘🦁🐦🐢</h2>
@@ -274,7 +274,7 @@ em {
     <div class="animal turtle" onclick="chooseAnimal('เต่า')">🐢<br>เต่า (ทิศใต้)</div>
   </div>
   <input type="number" id="percent" placeholder="ตรงกับคุณกี่ % (0-100)">
-  <button onclick="saveAnimal()">ยืนยัน</button>
+  <!-- <button onclick="saveAnimal()">ยืนยัน</button> -->
   <div class="result" id="animalResult"></div>
 
   <h2>3. สะพานเชื่อมอดีต-ปัจจุบัน-อนาคต 🌉</h2>
@@ -287,8 +287,12 @@ em {
   <p>สิ่งที่คุณอยากทำให้สำเร็จ</p>
   <textarea id="future" rows="2"></textarea>
 
-  <button onclick="saveBridge()">บันทึกความคิด</button>
+  <!-- <button onclick="saveBridge()">บันทึกความคิด</button> -->
   <div class="result" id="bridgeResult"></div>
+
+<button onclick="saveAll()">💾 บันทึกคำตอบทั้งหมด</button>
+<div class="result" id="saveResult"></div>
+
 
 <script>
   // 🎉 ลิบบิ้นโปรยตอนโหลดหน้า
@@ -300,7 +304,9 @@ em {
     });
   });
 
-  const scriptURL = "https://script.google.com/macros/s/AKfycbxHuAEqtLxFDwY-w1C51tY6cBWD9NI-Mb1t2V_jUpvBH_pvW5py69TY5aeAPMUAvW67/exec"; // ใส่ URL จาก Apps Script
+const scriptURL = "https://script.google.com/macros/s/AKfycbxHuAEqtLxFDwY-w1C51tY6cBWD9NI-Mb1t2V_jUpvBH_pvW5py69TY5aeAPMUAvW67/exec";
+const rowId = "U" + Date.now();
+let chosenAnimal = "";
 
   // 🎵 toggle เพลง
 const music = document.getElementById("bgMusic");
@@ -315,8 +321,6 @@ function toggleMusic() {
   }
 }
 
-// สร้าง rowId ตอนเริ่ม (สุ่ม id หรือใช้ timestamp)
-const rowId = "U" + Date.now();
 
 // -------------------------
 // ฟังก์ชันส่งข้อมูลไป Google Sheets
@@ -367,8 +371,6 @@ const animalInfo = {
              <li><b>เหมาะกับ:</b> งานที่ต้องใช้ความแม่นยำ</li></ul>` }
 };
 
-let chosenAnimal = "";
-
 // -------------------------
 // 2) เลือกสัตว์
 function chooseAnimal(animal) {
@@ -379,6 +381,38 @@ function chooseAnimal(animal) {
       คุณเลือก <b style="color:${a.color}">${a.icon} ${animal}</b><br>
       <em>${a.desc}</em><br>${a.detail}
     </div>`;
+}
+
+// ✅ ปุ่มเดียว: บันทึกทั้งหมด
+function saveAll() {
+  const data = {
+    rowId,
+    selfMessage: document.getElementById('selfMessage').value || "",
+    animal: chosenAnimal || "",
+    percent: document.getElementById('percent').value || "",
+    past: document.getElementById('past').value || "",
+    present: document.getElementById('present').value || "",
+    future: document.getElementById('future').value || ""
+  };
+
+  if (!data.selfMessage && !data.animal && !data.past && !data.present && !data.future) {
+    alert("กรุณากรอกข้อมูลก่อนกดบันทึกค่ะ 💬");
+    return;
+  }
+
+  fetch(scriptURL, {
+    method: "POST",
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(res => {
+    document.getElementById("saveResult").innerHTML =
+      `✅ <b>บันทึกสำเร็จ!</b> ข้อมูลของคุณถูกส่งเรียบร้อยแล้ว 💖`;
+  })
+  .catch(err => {
+    document.getElementById("saveResult").innerHTML =
+      `❌ เกิดข้อผิดพลาดในการบันทึก: ${err.message}`;
+  });
 }
 
 // บันทึกสัตว์ที่เลือก
