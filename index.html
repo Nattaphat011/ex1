@@ -262,8 +262,8 @@ em {
 
   <h2>1. สะท้อนความรู้สึกของตัวคุณเอง 🪞</h2>
   <textarea id="selfMessage" rows="3" placeholder="เขียนสิ่งที่อยากบอกกับตัวคุณเอง...ในวันนี้"></textarea>
-  <button onclick="">บันทึกข้อความ</button>
-  <div class="result" id="messageResult"></div>
+  <!-- <button onclick="saveMessage()">บันทึกข้อความ</button>
+  <div class="result" id="messageResult"></div> -->
 
   <h2>2. สัตว์ 4 ทิศ 🐘🦁🐦🐢</h2>
   <p>คุณคิดว่าสัตว์ชนิดใดตรงกับคุณมากที่สุด?</p>
@@ -274,7 +274,7 @@ em {
     <div class="animal turtle" onclick="chooseAnimal('เต่า')">🐢<br>เต่า (ทิศใต้)</div>
   </div>
   <input type="number" id="percent" placeholder="ตรงกับคุณกี่ % (0-100)">
-  <button onclick="">ยืนยัน</button>
+  <button onclick="saveAnimal()">ยืนยัน</button>
   <div class="result" id="animalResult"></div>
 
   <h2>3. สะพานเชื่อมอดีต-ปัจจุบัน-อนาคต 🌉</h2>
@@ -287,8 +287,8 @@ em {
   <p>สิ่งที่คุณอยากทำให้สำเร็จ</p>
   <textarea id="future" rows="2"></textarea>
 
-  <button onclick="">บันทึกความคิด</button>
-  <div class="result" id="bridgeResult"></div>
+  <!-- <button onclick="saveBridge()">บันทึกความคิด</button>
+  <div class="result" id="bridgeResult"></div> -->
 
 <button onclick="saveAll()">💾 บันทึกคำตอบทั้งหมด</button>
 <div class="result" id="saveResult"></div>
@@ -337,17 +337,17 @@ function sendToSheet(data) {
 // -------------------------
 // 1) บันทึกข้อความสะท้อนตนเอง
 function saveMessage() {
-  // let msg = document.getElementById('selfMessage').value;
-  document.getElementById('messageResulที').innerHTML = "💌 ข้อความของคุณ: <br>" + msg;
+  let msg = document.getElementById('selfMessage').value;
+  document.getElementById('messageResult').innerHTML = "💌 ข้อความของคุณ: <br>" + msg;
 
-  // sendToSheet({
-  //   // selfMessage: msg,
-  //   // animal: "",
-  //   // percent: "",
-  //   // past: "",
-  //   // present: "",
-  //   // future: ""
-  // });
+  sendToSheet({
+    selfMessage: msg,
+    animal: "",
+    percent: "",
+    past: "",
+    present: "",
+    future: ""
+  });
 }
 
 // -------------------------
@@ -417,48 +417,42 @@ function saveAll() {
 
 // บันทึกสัตว์ที่เลือก
 function saveAnimal() {
-  // let percent = document.getElementById('percent').value;
+  
   if (chosenAnimal === "") {
     alert("กรุณาเลือกสัตว์ที่ตรงกับคุณก่อนค่ะ!");
     return;
   }
+
   const a = animalInfo[chosenAnimal];
+
+  // แสดงผลลัพธ์เฉย ๆ
   document.getElementById('animalResult').innerHTML =
     `<div style="border-left: 8px solid ${a.color}; padding:10px;">
       🐾 คุณคือ <b style="color:${a.color}">${a.icon} ${chosenAnimal}</b>
       ตรงกับคุณ ${percent}% <br>
       <em>${a.desc}</em> ${a.detail}
     </div>`;
-
-  // sendToSheet({
-  //   // selfMessage: "",
-  //   // animal: chosenAnimal,
-  //   // percent: percent,
-  //   // past: "",
-  //   // present: "",
-  //   // future: ""
-  // });
-}
+  }
 
 // -------------------------
 // 3) บันทึกสะพานอดีต-ปัจจุบัน-อนาคต
 function saveBridge() {
-  // let past = document.getElementById('past').value;
-  // let present = document.getElementById('present').value;
-  // let future = document.getElementById('future').value;
+  let past = document.getElementById('past').value;
+  let present = document.getElementById('present').value;
+  let future = document.getElementById('future').value;
   document.getElementById('bridgeResult').innerHTML =
     `<b>อดีต:</b> ${past}<br>
      <b>ปัจจุบัน:</b> ${present}<br>
      <b>อนาคต:</b> ${future}`;
 
-  // sendToSheet({
-  //   // selfMessage: "",
-  //   // animal: "",
-  //   // percent: "",
-  //   // past: past,
-  //   // present: present,
-  //   // future: future
-  // });
+  sendToSheet({
+    selfMessage: "",
+    animal: "",
+    percent: "",
+    past: past,
+    present: present,
+    future: future
+  });
 }
 </script>
 </body>
